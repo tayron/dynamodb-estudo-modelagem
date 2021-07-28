@@ -50,9 +50,23 @@ func ObterListaPerfilPorSK(sk string) []Perfil {
 		},
 	})
 
+	return criarListaPerfis(listaPerfis)
+}
+
+func ObterPerfilPorSK(sk string) Perfil {
+	clienteDynamoDb := awsUtil.ObterClienteDynamoDbLocal()
+
+	scanPaginator := dynamodb.NewScanPaginator(clienteDynamoDb, &dynamodb.ScanInput{
+		TableName:        aws.String("pedidos"),
+		FilterExpression: aws.String("sk = :sk"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":sk": &types.AttributeValueMemberS{Value: sk},
+		},
+	})
+
 	var perfil []Perfil
-	for listaPerfis.HasMorePages() {
-		out, err := listaPerfis.NextPage(context.TODO())
+	for scanPaginator.HasMorePages() {
+		out, err := scanPaginator.NextPage(context.TODO())
 		if err != nil {
 			panic(err)
 		}
@@ -63,13 +77,17 @@ func ObterListaPerfilPorSK(sk string) []Perfil {
 		}
 	}
 
-	return perfil
+	if len(perfil) == 0 {
+		return Perfil{}
+	}
+
+	return perfil[0]
 }
 
-func criarListaPerfis(listaPerfis *dynamodb.ScanPaginator) []Perfil {
-	var listaPropostas []Perfil
-	for listaPerfis.HasMorePages() {
-		out, err := listaPerfis.NextPage(context.TODO())
+func criarListaPerfis(scanPaginator *dynamodb.ScanPaginator) []Perfil {
+	var listaPerfis []Perfil
+	for scanPaginator.HasMorePages() {
+		out, err := scanPaginator.NextPage(context.TODO())
 		if err != nil {
 			panic(err)
 		}
@@ -80,7 +98,7 @@ func criarListaPerfis(listaPerfis *dynamodb.ScanPaginator) []Perfil {
 			panic(err)
 		}
 
-		listaPropostas = append(listaPropostas, perfil...)
+		listaPerfis = append(listaPerfis, perfil...)
 	}
-	return listaPropostas
+	return listaPerfis
 }

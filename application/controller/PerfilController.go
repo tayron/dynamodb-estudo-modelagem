@@ -17,9 +17,8 @@ func ObterPerfil() {
 	listaPerfis := model.ObterTodasOsPerfis()
 
 	for _, perfil := range listaPerfis {
-		perfilEncontrado := model.ObterListaPerfilPorSK(perfil.SK)
-		//util.DebugarStruct(perfil)
+		perfilEncontrado := model.ObterPerfilPorSK(perfil.SK)
+		fmt.Println(perfil)
 		util.DebugarStruct(perfilEncontrado)
 	}
-
 }
