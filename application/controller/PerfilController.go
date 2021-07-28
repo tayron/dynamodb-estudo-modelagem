@@ -15,6 +15,11 @@ func ObterPerfil() {
 
 	fmt.Println("● Consultando dados no banco")
 	listaPerfis := model.ObterTodasOsPerfis()
-	util.DebugarStruct(listaPerfis)
+
+	for _, perfil := range listaPerfis {
+		perfilEncontrado := model.ObterPerfilPorSK(perfil.SK)
+		//util.DebugarStruct(perfil)
+		util.DebugarStruct(perfilEncontrado)
+	}
 
 }

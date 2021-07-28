@@ -39,6 +39,33 @@ func ObterTodasOsPerfis() []Perfil {
 	return criarListaPerfis(listaPerfis)
 }
 
+func ObterPerfilPorSK(sk string) []Perfil {
+	clienteDynamoDb := awsUtil.ObterClienteDynamoDbLocal()
+
+	listaPerfis := dynamodb.NewScanPaginator(clienteDynamoDb, &dynamodb.ScanInput{
+		TableName:        aws.String("pedidos"),
+		FilterExpression: aws.String("sk = :sk"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":sk": &types.AttributeValueMemberS{Value: sk},
+		},
+	})
+
+	var perfil []Perfil
+	for listaPerfis.HasMorePages() {
+		out, err := listaPerfis.NextPage(context.TODO())
+		if err != nil {
+			panic(err)
+		}
+
+		err = attributevalue.UnmarshalListOfMaps(out.Items, &perfil)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	return perfil
+}
+
 func criarListaPerfis(listaPerfis *dynamodb.ScanPaginator) []Perfil {
 	var listaPropostas []Perfil
 	for listaPerfis.HasMorePages() {
