@@ -1,9 +1,10 @@
 package controller
 
 import (
-	"bitbucket/credihome/dynamodb-estudo/application/model"
-	"bitbucket/credihome/dynamodb-estudo/application/util"
 	"fmt"
+
+	"github.com/tayron/dynamodb-estudo-modelagem/application/model"
+	"github.com/tayron/dynamodb-estudo-modelagem/application/util"
 )
 
 func ObterPerfil() {

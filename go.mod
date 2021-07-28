@@ -1,4 +1,4 @@
-module bitbucket/credihome/dynamodb-estudo
+module github.com/tayron/dynamodb-estudo-modelagem
 
 go 1.15
 

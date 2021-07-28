@@ -3,7 +3,7 @@ package model
 import (
 	"context"
 
-	awsUtil "bitbucket/credihome/dynamodb-estudo/application/aws"
+	awsUtil "github.com/tayron/dynamodb-estudo-modelagem/application/aws"
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
