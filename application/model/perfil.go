@@ -39,7 +39,7 @@ func ObterTodasOsPerfis() []Perfil {
 	return criarListaPerfis(listaPerfis)
 }
 
-func ObterPerfilPorSK(sk string) []Perfil {
+func ObterListaPerfilPorSK(sk string) []Perfil {
 	clienteDynamoDb := awsUtil.ObterClienteDynamoDbLocal()
 
 	listaPerfis := dynamodb.NewScanPaginator(clienteDynamoDb, &dynamodb.ScanInput{
