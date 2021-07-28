@@ -15,7 +15,6 @@ func ObterPerfil() {
 
 	fmt.Println("● Consultando dados no banco")
 	listaPerfis := model.ObterTodasOsPerfis()
-
 	util.DebugarStruct(listaPerfis)
 
 }
