@@ -12,7 +12,7 @@ func ObterPerfil() {
 	lista := model.ObterTodasOsPerfis()
 
 	for _, item := range lista {
-		item2 := model.ObterEnderecoPorPerfil(item.PK)
+		item2 := model.ObterFiliacaoPorPerfil(item.PK)
 		util.DebugarStruct(item2)
 	}
 }
