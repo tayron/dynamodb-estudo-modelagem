@@ -8,17 +8,11 @@ import (
 )
 
 func ObterPerfil() {
-	fmt.Println()
-	fmt.Println("---------------------------------------------------------")
-	fmt.Println("Obtendo todos os perfis")
-	fmt.Println("---------------------------------------------------------")
-
 	fmt.Println("● Consultando dados no banco")
-	listaPerfis := model.ObterTodasOsPerfis()
+	lista := model.ObterTodasOsPerfis()
 
-	for _, perfil := range listaPerfis {
-		perfilEncontrado := model.ObterPerfilPorSK(perfil.SK)
-		fmt.Println(perfil)
-		util.DebugarStruct(perfilEncontrado)
+	for _, item := range lista {
+		item2 := model.ObterEnderecoPorPerfil(item.PK)
+		util.DebugarStruct(item2)
 	}
 }

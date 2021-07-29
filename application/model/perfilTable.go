@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"fmt"
 
 	awsUtil "github.com/tayron/dynamodb-estudo-modelagem/application/aws"
 
@@ -10,20 +11,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/aws/aws-sdk-go/aws"
 )
-
-type Telefone struct {
-	Fixo    string `json:"fixo"`
-	Celular string `json:"celular"`
-}
-type Perfil struct {
-	PK        string     `json:"pk"`
-	SK        string     `json:"sk"`
-	Nome      string     `json:"nome"`
-	RG        string     `json:"rg"`
-	CPF       string     `json:"cpf"`
-	Email     string     `json:"email"`
-	Telefones []Telefone `json:"telefones"`
-}
 
 func ObterTodasOsPerfis() []Perfil {
 	clienteDynamoDb := awsUtil.ObterClienteDynamoDbLocal()
@@ -53,14 +40,33 @@ func ObterListaPerfilPorSK(sk string) []Perfil {
 	return criarListaPerfis(listaPerfis)
 }
 
-func ObterPerfilPorSK(sk string) Perfil {
+func criarListaPerfis(scanPaginator *dynamodb.ScanPaginator) []Perfil {
+	var listaPerfis []Perfil
+	for scanPaginator.HasMorePages() {
+		out, err := scanPaginator.NextPage(context.TODO())
+		if err != nil {
+			panic(err)
+		}
+
+		var perfil []Perfil
+		err = attributevalue.UnmarshalListOfMaps(out.Items, &perfil)
+		if err != nil {
+			panic(err)
+		}
+
+		listaPerfis = append(listaPerfis, perfil...)
+	}
+	return listaPerfis
+}
+
+func ObterPerfilPorEmail(email string) Perfil {
 	clienteDynamoDb := awsUtil.ObterClienteDynamoDbLocal()
 
 	scanPaginator := dynamodb.NewScanPaginator(clienteDynamoDb, &dynamodb.ScanInput{
 		TableName:        aws.String("pedidos"),
 		FilterExpression: aws.String("sk = :sk"),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":sk": &types.AttributeValueMemberS{Value: sk},
+			":sk": &types.AttributeValueMemberS{Value: fmt.Sprintf("#PERFIL#%s", email)},
 		},
 	})
 
@@ -84,21 +90,33 @@ func ObterPerfilPorSK(sk string) Perfil {
 	return perfil[0]
 }
 
-func criarListaPerfis(scanPaginator *dynamodb.ScanPaginator) []Perfil {
-	var listaPerfis []Perfil
+func ObterPerfilPorPK(pk string) Perfil {
+	clienteDynamoDb := awsUtil.ObterClienteDynamoDbLocal()
+
+	scanPaginator := dynamodb.NewScanPaginator(clienteDynamoDb, &dynamodb.ScanInput{
+		TableName:        aws.String("pedidos"),
+		FilterExpression: aws.String("pk = :pk"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":pk": &types.AttributeValueMemberS{Value: pk},
+		},
+	})
+
+	var perfil []Perfil
 	for scanPaginator.HasMorePages() {
 		out, err := scanPaginator.NextPage(context.TODO())
 		if err != nil {
 			panic(err)
 		}
 
-		var perfil []Perfil
 		err = attributevalue.UnmarshalListOfMaps(out.Items, &perfil)
 		if err != nil {
 			panic(err)
 		}
-
-		listaPerfis = append(listaPerfis, perfil...)
 	}
-	return listaPerfis
+
+	if len(perfil) == 0 {
+		return Perfil{}
+	}
+
+	return perfil[0]
 }
