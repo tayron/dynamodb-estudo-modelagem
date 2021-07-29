@@ -12,7 +12,10 @@ func ObterPerfil() {
 	lista := model.ObterTodasOsPerfis()
 
 	for _, item := range lista {
-		item2 := model.ObterFiliacaoPorPerfil(item.PK)
+		fmt.Println("------------------------------")
+		fmt.Printf("CPF %s \n", item.PK)
+		item2 := model.ObterPedidoPorPerfil(item.PK)
 		util.DebugarStruct(item2)
+		fmt.Println("******************************")
 	}
 }
